@@ -2,10 +2,12 @@ package com.example.genetic
 
 import java.lang.Math.abs
 import java.lang.Math.pow
+import java.util.Random
 import kotlin.collections.ArrayList
 
-class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: Int = 4) {
+class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val mutation_chance: Double = 0.5, val pop_num: Int = 4) {
     var pops: MutableList<MutableList<Int>> = ArrayList(this.pop_num)
+    val random = Random()
     init {
         var pop: MutableList<Int> = ArrayList(4);
         for (i in 0 until pop_num) {
@@ -63,7 +65,7 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
     }
 
     fun gen_new_pop(parents: MutableList<MutableList<Int>>) {
-        var newPops: MutableList<MutableList<Int>> = ArrayList()
+        val newPops: MutableList<MutableList<Int>> = ArrayList()
 
         newPops.add(parents[0])
         newPops.add(parents[1])
@@ -72,7 +74,11 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
         }
 
         for (pop in newPops) {
-            pop[(0 until pop.size).random()] = (0 until 100).random()
+            for (index in 0 until pop.size) {
+                if (this.random.nextDouble() > this.mutation_chance) {
+                    pop[index] = (0 until 100).random()
+                }
+            }
         }
 
         this.pops = newPops
@@ -80,7 +86,7 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
 
     fun fitness(): MutableList<Int> {
 
-        var deltas: MutableList<Double> = ArrayList()
+        val deltas: MutableList<Double> = ArrayList()
 
         for (pop in this.pops) {
             deltas.add(abs(equation(pop) - this.y_val))
@@ -92,7 +98,7 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
             }
         }
 
-        var inverse_deltas: MutableList<Double> = ArrayList()
+        val inverse_deltas: MutableList<Double> = ArrayList()
 
         for (delta in deltas) {
             inverse_deltas.add(pow(delta, -1.0))
@@ -104,7 +110,7 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
             inverse_total_delta += inverse
         }
 
-        var fitnesses: MutableList<Double> = ArrayList()
+        val fitnesses: MutableList<Double> = ArrayList()
 
         for (inverse in inverse_deltas){
             fitnesses.add(inverse/inverse_total_delta)
@@ -112,7 +118,7 @@ class Genetic(val x_arr: MutableList<Double>, val y_val: Double, val pop_num: In
 
         val fittest = max(fitnesses)
 
-        var parents: MutableList<MutableList<Int>> = ArrayList()
+        val parents: MutableList<MutableList<Int>> = ArrayList()
 
         for (fitness in fittest) {
             parents.add(this.pops[find_index(fitness, fitnesses)])

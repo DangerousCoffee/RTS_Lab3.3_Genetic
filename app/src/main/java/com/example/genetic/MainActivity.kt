@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
             val genetic: Genetic = Genetic(
                 x_arr,
                 y_val.getText().toString().toDouble(),
+                mut.getText().toString().toDouble(),
                 pop_number.getText().toString().toInt()
             )
 
